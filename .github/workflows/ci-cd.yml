@@ -1,4 +1,4 @@
-name: Spring Boot CI
+name: Spring Boot + React CI
 
 on:
   push:
@@ -32,3 +32,29 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify
         working-directory: backend
+
+      # React build and test
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
+
+      - name: Install React dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Test React app
+        run: npm test
+        working-directory: frontend
+
+      - name: Build React app
+        run: npm run build
+        working-directory: frontend
+
